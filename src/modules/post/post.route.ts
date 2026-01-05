@@ -1,16 +1,18 @@
-import express, { Router } from 'express';
+import express, { NextFunction, Request, Response, Router } from 'express';
 import { postController } from './post.controller';
+import { auth as betterAuth } from '../../../lib/auth';
+import { boolean, string } from 'better-auth/*';
+import auth, { RoleEnum } from '../../middleware/auth/authMiddleware';
+
 
 
 const route = express.Router();
 
 
-route.post('/',postController.createPost);
-route.get('/',postController.getAllPosts)
-
-route.get('/',(req,res) => {
-    res.send('Get all posts')
-})
+route.get('/', auth(RoleEnum.ADMIN,RoleEnum.USER), postController.getAllPosts)
+route.post('/',auth(RoleEnum.ADMIN,RoleEnum.USER), postController.createPost);
 
 
-export const postRouter:Router = route;
+
+
+export const postRouter: Router = route;

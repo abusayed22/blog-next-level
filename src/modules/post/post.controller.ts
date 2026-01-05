@@ -5,7 +5,12 @@ import { postService } from "./post.services";
 
 const createPost = async (req:Request,res:Response) => {
     try {
-        const result = await postService.createPost(req.body);
+        const user = req.user;
+        if(!user){
+            return res.status(401).json({message: "Unauthorized!"})
+        }
+
+        const result = await postService.createPost(req.body,user.id as string);
         res.status(201).json(result);
     } catch (error) {
         console.log({error});
@@ -15,7 +20,9 @@ const createPost = async (req:Request,res:Response) => {
 
 const getAllPosts = async(req:Request,res:Response) => {
     try {
-        const result = await postService.getAllPosts();
+        const {search} = req.query 
+        const searchString = typeof search === 'string' ? search : ""
+        const result = await postService.getAllPosts(searchString);
         res.status(200).json(result);
     } catch (error) {
         console.log(error);
