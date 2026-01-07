@@ -1,5 +1,6 @@
-import { prisma } from "../lib/prisma"
+
 import { app } from "./app";
+import { prisma } from "../lib/prisma";
 
 
 const main = () => {
