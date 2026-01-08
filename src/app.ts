@@ -3,6 +3,7 @@ import { postRouter } from "./modules/post/post.route";
 import { toNodeHandler } from "better-auth/node";
 import cors from 'cors'
 import { auth } from "../lib/auth";
+import { commentsRouter } from "./modules/comments/comment.route";
 
 
 
@@ -14,6 +15,7 @@ app.all('/api/auth/{*any}', toNodeHandler(auth));
 
 // router list
 app.use('/posts',postRouter);
+app.use('/comments',commentsRouter);
 
 // cors setup
 app.use(cors({

@@ -39,17 +39,18 @@ enum postStatus {
 model Comment {
   id        String        @id @default(cuid())
   comment   String        @db.Text
-  status    commentStatus
+  status    commentStatus @default(APPROVED)
   post_id   String
-  post      Post          @relation(fields: [post_id], references: [id])
+  post      Post          @relation(fields: [post_id], references: [id],onDelete: Cascade)
   user_id   String // better auth with relation
   createdAt DateTime      @default(now())
   updatedAt DateTime      @updatedAt
 
   // comment er own relation
-  comment_id      String
-  relatedComment  Comment?  @relation("CommentToComment", fields: [comment_id], references: [id])
-  relatedComments Comment[] @relation("CommentToComment")
+  parent_id      String ?
+  relatedComment  Comment?  @relation("CommentToComment", fields: [parent_id], references: [id],onDelete: Cascade)
+  replies Comment[] @relation("CommentToComment")
+  // replies  Comment[] @relation("CommentReplies")
 
   @@index([post_id])
   @@index([user_id])

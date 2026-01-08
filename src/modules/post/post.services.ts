@@ -1,4 +1,4 @@
-import { Post, postStatus } from "../../../generated/prisma/client";
+import { commentStatus, Post, postStatus } from "../../../generated/prisma/client";
 import { PostWhereInput } from "../../../generated/prisma/models";
 import { prisma } from "../../../lib/prisma";
 
@@ -84,6 +84,11 @@ const getAllPosts = async ({ search, tags, isFeatured, status, user_id, page, li
                 [orderBy]: order ?? 'asc'
             } : {
                 createdAt: 'desc'
+            },
+            include: {
+                _count:{
+                    select:{comments:true}
+                }
             }
         }
     );
@@ -107,7 +112,7 @@ const getAllPosts = async ({ search, tags, isFeatured, status, user_id, page, li
 
 
 const getPostById = async (postId: string) => {
-        return await prisma.$transaction(async (tx) => {
+    return await prisma.$transaction(async (tx) => {
         await tx.post.update({
             where: {
                 id: postId
@@ -121,10 +126,46 @@ const getPostById = async (postId: string) => {
         const getPost = await tx.post.findUnique({
             where: {
                 id: postId
+            },
+            include: {
+                comments: {
+                    where: {
+                        parent_id: null,
+                        status: commentStatus.APPROVED
+                    },
+                    orderBy: {
+                        createdAt: "desc"
+                    },
+                    include: {
+                        replies: {
+                            where: {
+                                status: commentStatus.APPROVED
+                            },
+                            orderBy: {
+                                createdAt: 'asc'
+                            },
+                            include: {
+                                replies: {
+                                    where: {
+                                        status: commentStatus.APPROVED
+                                    },
+                                    orderBy: {
+                                        createdAt: 'asc'
+                                    },
+                                }
+                            }
+                        }
+                    }
+                },
+                _count: {
+                    select:{comments:true}
+                }
             }
         });
         return getPost;
     });
 }
+
+
 
 export const postService = { createPost, getAllPosts, getPostById }
