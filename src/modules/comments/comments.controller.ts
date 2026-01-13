@@ -1,5 +1,6 @@
 import { Request, Response } from "express";
 import { commentsService } from "./comments.service";
+import { commentStatus } from "../../../generated/prisma/enums";
 
 
 
@@ -63,6 +64,24 @@ const createComment = async (req:Request,res:Response) => {
 
 
 
+const modarateComment = async (req:Request,res:Response) => {
+    try {
+        // const user = req.user;
+        //  req.body.user_id = user?.id;
+
+         const {commentId} = req.params;
+
+        const result = await commentsService.modarateComment(commentId as string, req.body);
+
+        res.status(200).send(result)
+    } catch (error) {
+        const errorMessage = (error instanceof Error) ? error.message : "The status already up to date"
+        res.status(400).json({error: errorMessage, details: error})
+    }
+}
+
+
+
 
 export const commentsController = {
     getCommentById,
@@ -70,4 +89,5 @@ export const commentsController = {
     getCommentsByAuthor,
     deleteComment,
     updateComment,
+    modarateComment
 }

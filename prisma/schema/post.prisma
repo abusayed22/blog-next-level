@@ -1,0 +1,26 @@
+
+model Post {
+  id        String     @id @default(cuid())
+  title     String     @db.VarChar(255)
+  content   String     @db.Text
+  status    postStatus @default(PUBLISHED)
+  thumbnail String?
+  tags     String[]
+  isFeatured Boolean @default(false)
+  viewCount Int @default(0)
+  user_id   String // better auth with relation
+  createdAt DateTime   @default(now())
+  updatedAt DateTime   @updatedAt
+  comments  Comment[]
+  // indexing user_id for faster querires
+  // naming the table as posts
+  @@index([user_id])
+  @@map("posts")
+}
+
+enum postStatus {
+  DRAFT
+  PUBLISHED
+  ARCHIVED
+  DELETED
+}

@@ -2,6 +2,7 @@ import { Request, Response } from "express";
 import { postService } from "./post.services";
 import { postStatus } from "../../../generated/prisma/enums";
 import paginationSortingHelper from "../../helpers/paginationSortingHelper";
+import { RoleEnum } from "../../middleware/auth/authMiddleware";
 
 
 
@@ -60,6 +61,70 @@ const getPostById = async(req:Request,res:Response) => {
     }
 }
 
-export const postController = { createPost, getAllPosts,getPostById }
+
+const getMyPosts = async(req:Request,res:Response) => {
+    try{
+        const user = req.user;
+
+        if(!user){
+            throw new Error("The user Unauthorized!")
+        }
+        const result = await postService.getMyPosts(user?.id);
+        return res.status(200).json(result);
+    }catch (error) {
+        console.log({ error });
+        res.status(500).json({ message: error instanceof Error ? error.message : "Internal Server Error!" })
+    }
+};
+
+const updatePost = async (req:Request,res:Response) => {
+    try{
+        const user = req.user;
+        const {postId} = req.params;
+        const isAdmin = user?.role === RoleEnum.ADMIN 
+
+
+        if(!user){
+            throw new Error("The user Unauthorized!")
+        }
+        const result = await postService.updatePost(postId as string, req.body,user?.id,isAdmin);
+        return res.status(200).json(result);
+    }catch (error) {
+        console.log({ error });
+        res.status(500).json({ message: error instanceof Error ? error.message : "Internal Server Error!" })
+    }
+}
+
+const deletePost = async (req:Request,res:Response) => {
+    try{
+        const user = req.user;
+        const {postId} = req.params;
+        const isAdmin = user?.role === RoleEnum.ADMIN 
+
+
+        if(!user){
+            throw new Error("The user Unauthorized!")
+        }
+        const result = await postService.deletePost(postId as string, user?.id,isAdmin);
+        return res.status(200).json(result);
+    }catch (error) {
+        console.log({ error });
+        res.status(500).json({ message: error instanceof Error ? error.message : "Internal Server Error!" })
+    }
+}
+
+
+const getStats = async (req:Request,res:Response) => {
+    try{
+        const user = req.user;
+        const result = await postService.getStats();
+        return res.status(200).json(result);
+    }catch (error) {
+        console.log({ error });
+        res.status(500).json({ message: error instanceof Error ? error.message : "Internal Server Error!" })
+    }
+}
+
+export const postController = { createPost, getAllPosts,getPostById,getMyPosts,updatePost,deletePost,getStats }
 
 

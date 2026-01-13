@@ -10,7 +10,7 @@ const route = express.Router();
 route.get('/:commentId', auth(RoleEnum.ADMIN,RoleEnum.USER), commentsController.getCommentById);
 route.get('/author/:user_id', auth(RoleEnum.ADMIN,RoleEnum.USER), commentsController.getCommentsByAuthor);
 route.post('/', auth(RoleEnum.ADMIN,RoleEnum.USER), commentsController.createComment);
-
+route.patch("/:commentId/moderate",auth(RoleEnum.ADMIN,RoleEnum.USER),commentsController.modarateComment)
 
 
 route.patch('/:commentId', auth(RoleEnum.ADMIN,RoleEnum.USER), commentsController.updateComment);
