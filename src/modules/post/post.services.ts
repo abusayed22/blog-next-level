@@ -5,7 +5,6 @@ import { RoleEnum } from "../../middleware/auth/authMiddleware";
 
 
 const createPost = async (data: Omit<Post, 'id' | 'createdAt' | 'updatedAt'>, userId: string) => {
-    // console.log(data)
     const result = await prisma.post.create({
         data: {
             ...data,

@@ -29,6 +29,7 @@ const auth = (...roles:RoleEnum[]) => {
             const session = await betterAuth.api.getSession({
                 headers: req.headers as any
             });
+
             
             if(!session){
                 return res.status(401).send("Unauthorized")

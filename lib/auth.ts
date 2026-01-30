@@ -20,6 +20,7 @@ export const auth = betterAuth({
     database: prismaAdapter(prisma, {
         provider: "postgresql",
     }),
+    trustedOrigins: [process.env.FRONTEND_URL!],
     // O-AUTH 
     socialProviders: {
         google: { 
@@ -110,5 +111,18 @@ export const auth = betterAuth({
             }
         }
     },
-    trustedOrigins: [process.env.FRONTEND_URL!],
+    // hooks:{
+    //     before:{
+    //         signIn: async(ctx:any) => {
+    //             const user = await prisma.user.findUnique({
+    //                 where:{
+    //                     id:ctx.user.id
+    //                 }
+    //             })
+    //             if(user && user.status !== "AACTIVE"){
+    //                 throw new Error("Your account is not active. Please contact support.")
+    //             }
+    //         }
+    //     }
+    // }
 });
